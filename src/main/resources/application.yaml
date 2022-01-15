@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: '*'
+            allowedMethods:
+              - GET
+      routes:
+        - id: conversion
+          uri: lb://conversion-service/
+          predicates:
+            - Path=/conversion/**
+          filters:
+            - RewritePath=/conversion/(?<path>.*), /conversion-devise/$\{path}
+        - id: bourse
+          uri: lb://bourse-service/
+          predicates:
+            - Path=/bourse/**
+          filters:
+            - RewritePath=/bourse/(?<path>.*), /$\{path}
+    loadbalancer:
+      ribbon:
+        enabled: false
+    consul:
+      config:
+        enabled: false
+
+server:
+  port: 8080
+
